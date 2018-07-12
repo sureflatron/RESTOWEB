@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="resumenIngreso" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fc8ea2c9-3a3a-45b9-8b9c-c9fb88674327">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+      concepto.nombre as formaPago,
+      egreso.importe AS importe
+    FROM
+    concepto,
+      egreso
+    INNER JOIN
+      tipoegreso ON tipoegreso.id = egreso.idTipoEgreso
+    INNER JOIN
+      puntoventa ON puntoventa.id = egreso.idPuntoVenta
+    INNER JOIN
+      empleado ON empleado.id = puntoventa.idEmpleado
+    WHERE
+      egreso.fecha BETWEEN  "2017-01-01" AND "2017-10-10" AND egreso.eliminado = 0  AND
+     egreso.formaPago = concepto.id]]>
+	</queryString>
+	<field name="formaPago" class="java.lang.String"/>
+	<field name="importe" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="importe_1" class="java.math.BigDecimal" resetType="Group" resetGroup="formapago" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<group name="formapago">
+		<groupExpression><![CDATA[$F{formaPago}]]></groupExpression>
+		<groupFooter>
+			<band height="22">
+				<textField>
+					<reportElement x="144" y="0" width="140" height="22" uuid="3257e0f2-1504-4827-a7b3-dbb7eaef14b0"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{importe_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="144" height="22" uuid="3c5989de-4b15-4653-af0b-ae656427c9f8"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{formaPago}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+</jasperReport>

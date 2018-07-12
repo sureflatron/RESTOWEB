@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dfdd629d-0193-41f3-b696-5ae70d554f88">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idcliente" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechainicio" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+  venta.id,
+  cuentacobrar.`fechaVencimiento`,
+  cuentacobrar.`importe`,
+  IF(
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`) IS NULL,
+    0,
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`)
+  ) AS totalCobrado,
+  venta.`fecha`,
+  venta.`hora`,
+  venta.id AS idventa,
+  cliente.nombre AS cliente,
+  cliente.`NIT` AS nitcliente,
+  cliente.telefonoFijo,
+  cliente.correo,
+  cliente.celular,
+  cliente.direccion,
+  empleado.`nombre` AS vendedor,
+  sucursal.nombre as sucursal 
+FROM
+  cuentacobrar,
+  venta,
+  cliente,
+  empleado,
+  puntoventa,
+  sucursal 
+WHERE venta.id = `cuentacobrar`.`idVenta` 
+  AND venta.`eliminado` = 0 
+  AND venta.`alquiler` = 1 
+  AND venta.`formaPago` = 'Credito' 
+  AND venta.`estado` = 1 
+  AND cliente.`id` = venta.`idCliente` 
+  AND empleado.id = `puntoventa`.`idEmpleado` 
+  AND `puntoventa`.id = venta.`idPuntoVenta` 
+  AND `cuentacobrar`.`fechaVencimiento` BETWEEN  $P{fechainicio} AND $P{fechafin}
+  AND sucursal.id = puntoventa.idSucursal 
+  AND `cuentacobrar`.`importe` <> IF(
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`) IS NULL,
+    0,
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`)
+  )
+  AND cliente.id = $P{idcliente}
+  AND venta.cancelado = 0]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fechaVencimiento" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="importe" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="totalCobrado" class="java.lang.Double"/>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="idventa" class="java.lang.Integer"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="nitcliente" class="java.lang.String"/>
+	<field name="telefonoFijo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="correo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="celular" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="vendedor" class="java.lang.String"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="140" splitType="Stretch">
+			<subreport>
+				<reportElement x="429" y="40" width="126" height="20" uuid="36edbe10-4b5e-4496-b1be-de8df5afd88e"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="429" y="0" width="126" height="20" uuid="8556f8f6-552e-4b5c-be40-4dab7cdb3786"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="120" width="125" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="dc1acd02-eded-4fc5-a2eb-a0ace2e24a4f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sucursal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="361" y="120" width="68" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="b22132cd-890f-4805-a249-fa23e9c7491a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Venc.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="429" y="20" width="126" height="20" uuid="6da34ddc-084c-4e8b-8966-32f002a7317e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="361" y="40" width="68" height="20" uuid="59af38c8-e38b-446a-b369-cfbfffa893ea"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empleado:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="0" width="68" height="20" uuid="9c80ce69-4b7d-4f9a-af4d-b27bd9cbc845"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="20" width="236" height="20" uuid="af4fd9ff-dc58-4921-9a50-686e4c3dd046"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTADO DE CUOTAS ATRASADAS]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="210" height="20" uuid="1671035f-e7d0-46dd-9043-eaa446e71676"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement mode="Opaque" x="210" y="120" width="151" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="feb83a75-ab2e-47c2-af51-e067385286f3"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empleado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="429" y="120" width="68" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="9a37eed4-1ebd-41f1-a2d2-13edc1e159e1"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Cuota]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="20" width="68" height="20" uuid="bcc21c9d-6165-4d7e-a70c-a1ef6dda5b59"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="125" y="120" width="85" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6a5d08d5-a448-4c54-847d-772cd2f25403"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cod. Venta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="497" y="120" width="58" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="26e037e8-f045-4468-93ac-470f5dea4851"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pagado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="125" height="20" uuid="6439199c-cd77-483c-b4ac-14b68e3f4b18"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLIENTE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="80" width="125" height="20" uuid="1568d2cf-77c0-4dfd-8ec1-41795784b479"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIT:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="80" width="68" height="20" uuid="23c89feb-b723-490c-a95c-82c2a9c21d53"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TELEFONO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="125" y="60" width="236" height="20" uuid="25e68a4e-3cd1-4f62-b437-33c86241dacb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="125" y="80" width="236" height="20" uuid="e127e271-5d3a-43d0-8834-2c00e57117a6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nitcliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="429" y="80" width="126" height="20" uuid="647a8f6c-519c-4fb6-bd87-afc5f8daa982"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{telefonoFijo} == null ? "" : $F{telefonoFijo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="361" y="60" width="68" height="20" uuid="53ddbb16-93d9-4008-90d8-74d004ed12ae"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CELULAR:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="100" width="68" height="20" uuid="bac664b1-7ef1-4525-9cc7-662d2ebbbbf4"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[E-MAIL:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="429" y="60" width="126" height="20" uuid="6bd78854-8d04-4853-ae95-bb7eeb2ece17"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{celular} == null ? "" : $F{celular}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="429" y="100" width="126" height="20" uuid="287a3708-ff46-42d0-a61e-273982288faa"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{correo} == null ? "" : $F{correo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="100" width="125" height="20" uuid="35b75f3f-41fb-41e3-9a92-c980435f94df"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIRECCION:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="125" y="100" width="236" height="20" uuid="a8b4564d-4227-436a-88e0-7c9d03107c30"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{direccion} == null ? "" : $F{direccion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="125" y="40" width="236" height="20" uuid="d3ae31d6-c75c-4bfa-82e8-e5c325cf32f1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Del "+$P{fechainicio}+"   Al "+$P{fechafin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="1" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="2" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="125" height="20" uuid="e4b477e1-6991-4865-ba85-e5f623b1b24e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="125" y="0" width="85" height="20" uuid="263e9f3f-cc26-47e8-80fb-9ef3f51ebe4b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idventa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="497" y="0" width="58" height="20" uuid="0e8bf670-29a4-40a0-8f57-a1c2c1bc7fd6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{totalCobrado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="429" y="0" width="68" height="20" uuid="a61e2c4e-9753-492a-8862-02296fa677bd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="151" height="20" uuid="62a2080e-2d2a-4480-8d8c-26dbbe2280bb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{vendedor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="361" y="0" width="68" height="20" uuid="976b917c-ae37-46ff-97a4-5f4afc4d938f"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fechaVencimiento})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fe6b57fb-a3ff-4be2-a372-014f4bebf266">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idegreso" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT egreso.id,egreso.fecha,empleado.nombre as empleado,egreso.hora,egreso.importe,egreso.pagadoA,egreso.glosa,tipoegreso.nombre as tipo
+        FROM egreso 
+        INNER JOIN tipoegreso
+        INNER JOIN puntoventa
+        INNER JOIN empleado
+        WHERE egreso.idTipoEgreso=tipoegreso.id 
+        and egreso.idPuntoVenta=puntoventa.id
+        and puntoventa.idEmpleado = empleado.id
+        and egreso.id = $P{idegreso}]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="empleado" class="java.lang.String"/>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="importe" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pagadoA" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="glosa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tipo" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="437" y="1" width="49" height="20" uuid="1d7832ad-027d-4a67-a582-ab2f76ba1fa0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="21" width="49" height="20" uuid="a886dea6-927c-4ce5-b034-7ba52c8deb98"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="41" width="49" height="20" uuid="c517bf21-73bf-48da-8b2d-079f8544fedf"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="486" y="0" width="86" height="20" uuid="55dcc244-c2a5-45c8-ac33-2efdf87882b0"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="486" y="21" width="86" height="20" uuid="1d433542-7f81-4c53-9373-dfd71ee2398a"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="0" width="172" height="20" uuid="1ec29f9b-5e40-4eb2-896c-01bd11a04c31"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="486" y="41" width="86" height="20" uuid="9c8631b5-5ced-44c2-9cb4-1f5560820161"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="187" y="21" width="146" height="20" uuid="b84e529a-5078-47c3-8e45-6edfc96ee408"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TXN DE EGRESO NRO. ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="333" y="21" width="44" height="20" uuid="705377bd-8b05-49e8-b2c7-a46f65f58b67"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="7" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="8" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="86" height="20" uuid="4bfb5a34-0fd2-401c-9903-8726d6b1ade7"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="186" y="1" width="71" height="20" uuid="23c27a9f-15e4-415d-98f7-a773c5a20e49"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="398" y="1" width="88" height="20" uuid="23169127-1cee-43af-8970-736ac4aa8d5f"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Registrado por :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="86" height="20" uuid="28275bed-15ea-47a7-875e-199ed7b95622"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Egreso :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="86" height="20" uuid="dbaf223b-92cd-4c7e-acee-5cde049ea695"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pagado A :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="86" height="20" uuid="3c023d5e-f7b1-4035-9544-5bd094970e40"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Por concepto de :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="80" width="86" height="20" uuid="b4c1b17c-2011-43d8-936a-164c04a21998"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="86" y="0" width="100" height="20" uuid="5191bc10-2b50-44bb-8d19-a727dc718649"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fecha})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="86" y="21" width="100" height="20" uuid="4fe4ff2d-d7a9-4652-b2d9-f4a1d9335dc6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="86" y="41" width="100" height="20" uuid="be07b415-50b5-4a53-8efc-63e7b666948b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{pagadoA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="86" y="60" width="100" height="20" uuid="39b4fd99-8a15-4b16-a725-de6d07c237d3"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{glosa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="86" y="80" width="100" height="20" uuid="4df5af67-3e7a-4958-9231-4ad3888a0e78"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="486" y="1" width="86" height="20" uuid="0824c0ed-a1da-4750-9b2e-0e828967a1f2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{empleado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="6" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="4" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="13" splitType="Stretch"/>
+	</summary>
+</jasperReport>

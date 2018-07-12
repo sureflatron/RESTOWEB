@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="441dadbd-f234-4f3a-83ed-373d69e713f9">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<subDataset name="dataset1" uuid="a9332647-75de-4065-ab7c-9f3c33e11b5b"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idsucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+producto.codigodebarra,
+producto.tamano as talla,
+  producto.nombre AS Producto,
+marca.nombre as marca,
+  SUM((detalleventa.Cantidad)) AS Cantidadvendida,
+  SUM((detalleventa.total)) AS ImporteTotal,
+  sucursal.nombre AS Sucursal,
+  almacen.nombre as almacen,
+  empleado.nombre as empleado
+FROM
+marca,
+empleado,almacen,
+  detalleventa
+INNER JOIN
+  producto ON detalleventa.idproducto = producto.id
+INNER JOIN
+  venta ON venta.id = detalleventa.idVenta
+INNER JOIN
+  puntoventa ON puntoventa.id = venta.idPuntoVenta
+INNER JOIN
+  sucursal ON puntoventa.idsucursal = sucursal.id
+WHERE
+  (
+    (
+      (venta.fecha) BETWEEN $P{fechaini} AND $P{fechafin}
+    )
+  ) AND venta.estado = 1 AND venta.eliminado = 0 AND venta.alquiler = 1 AND venta.idAlmacen = almacen.id and puntoventa.idEmpleado = empleado.id and puntoventa.idsucursal = $P{idsucursal} and producto.idmarca = marca.id
+
+GROUP BY producto.id
+ORDER BY ImporteTotal DESC]]>
+	</queryString>
+	<field name="codigodebarra" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="talla" class="java.lang.String"/>
+	<field name="Producto" class="java.lang.String"/>
+	<field name="marca" class="java.lang.String"/>
+	<field name="Cantidadvendida" class="java.math.BigDecimal"/>
+	<field name="ImporteTotal" class="java.math.BigDecimal"/>
+	<field name="Sucursal" class="java.lang.String"/>
+	<field name="almacen" class="java.lang.String"/>
+	<field name="empleado" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="120" splitType="Stretch">
+			<staticText>
+				<reportElement x="563" y="0" width="64" height="20" uuid="0a2ec700-2623-41db-85a5-da1f6cb84472"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="563" y="20" width="64" height="20" uuid="51ba818b-3692-471f-b3ec-045f0ca6cd9f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="563" y="40" width="64" height="20" uuid="a2b9bb4a-e3f1-4761-ae12-d096c20e77c3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="627" y="0" width="125" height="20" uuid="eb7c5479-5eeb-4615-8348-eba1af1c0635"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="627" y="20" width="125" height="20" uuid="76143779-1278-4553-9a47-0afe1a110e7c"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="627" y="40" width="126" height="20" uuid="2b032010-8bfa-41ce-8ddb-cc56fe2c44e1"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="210" height="20" uuid="848089e0-b76f-4383-b911-6a93f8ecc64e"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="210" y="20" width="353" height="20" uuid="dfc0b3c2-0d1e-4870-a469-3418539fdae1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RANKING DE PRODUCTOS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="60" width="353" height="20" uuid="f0e95465-3de3-4da1-8af9-267ae0f9f5e4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Del   "+$P{fechaini}+"     Al   "+$P{fechafin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="210" y="40" width="353" height="20" uuid="e5d3d200-30ec-4322-9052-e3c881e15ac9"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ordenado por Importe]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="93" y="80" width="117" height="20" uuid="c197c7e3-05bc-4408-b19a-df28abfd1c19"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Sucursal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="80" width="93" height="20" uuid="811bbd4d-c632-4fac-ba37-e91e671d23ad"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sucursal: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="291" y="100" width="188" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="4d02874a-5c68-4ddb-bc14-4acd5d8036b2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Producto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="627" y="100" width="48" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="5a2afcf9-c85b-4a56-943f-fe314d0f95a8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cant. ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="675" y="100" width="77" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="59115362-2b4e-408f-95ca-6080b89048cb"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Vendido]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="563" y="100" width="64" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="2904db28-79fa-4a1c-8f40-e69cc162144b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Marca]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="100" width="93" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="ed47f6af-8849-42f1-887f-f26505c033a3"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Almacen]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="93" y="100" width="117" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="271c5bea-2d14-45c7-b3ff-a7f13c4d8006"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empleado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="210" y="100" width="81" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="5ccb50bb-e7a8-441d-a77d-a8a975077b57"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codigo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="479" y="100" width="84" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="5d4e62fd-b76a-479b-84b9-cf0d3a0dcff8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Talla]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="3" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="291" y="0" width="188" height="20" uuid="40d21c33-17c1-4191-8e52-ecc63333c9eb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Producto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="627" y="0" width="48" height="20" uuid="561b6296-c894-40b6-8737-c03d2d9baa70"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Cantidadvendida}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="675" y="0" width="77" height="20" uuid="396f9c97-7c79-443a-853a-62acf0777577"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ImporteTotal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="93" height="20" uuid="02d60f37-c6a1-4776-9e6b-c44acc86e4f2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{almacen}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="563" y="0" width="64" height="20" uuid="1513d8e7-15a2-4a50-bd80-5e71ae7f5b58"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{marca}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="93" y="0" width="117" height="20" uuid="8d5e1226-1490-4b4e-a238-d7f247aca74f"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{empleado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="81" height="20" uuid="1b93407a-72f8-442d-8cf0-72f0a3664fc7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(($F{codigodebarra}.equals(null)) ? "" : $F{codigodebarra})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="479" y="0" width="84" height="20" uuid="b89b4b73-3a98-4bfd-b927-4bd7ddf521fb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{talla}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="7" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="8" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="4" splitType="Stretch"/>
+	</summary>
+</jasperReport>

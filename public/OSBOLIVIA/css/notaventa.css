@@ -1,0 +1,122 @@
+body{
+    font-family: 'Ubuntu', sans-serif;
+}
+
+table{
+    width: 100%;
+    font-size: 16px;   
+}
+
+
+#project{
+    padding-bottom: 10px;
+    font-size: 15px;
+}
+#nombreempresa{
+    text-align: center;
+    justify-content: center;
+}
+
+#descripcion{
+    font-size: 14px;
+}
+
+.tamano{
+    /*border: 1px solid black;*/
+    /*font-size: 150%;*/
+    /*width: 180mm;*/
+    width: 800px;
+    margin: auto;
+}
+
+#notices{
+    text-align: left;
+    font-size: 14px;
+}
+#datosfactura{
+    border-top: 1px solid black;
+    border-bottom:1px solid black;
+    text-align: left;
+    padding: 10px;
+    font-size: 15px;
+}
+
+#detalleVenta{
+    border-bottom: 1px solid black;
+    /*width: 80%;*/
+    font-size: 100%;
+}
+
+#factura{
+    text-align: center;
+    padding-bottom: 10px;
+    margin-bottom: 2px solid black;
+}
+
+#descricion{
+    width: 80%;
+    text-align: center;
+    margin: auto;
+}
+
+#descricion p{
+    text-align: center;
+    font-size: 10px;
+}
+
+#total{
+    text-align: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 14px !important;
+}
+
+#totLiteral{
+    padding: 10px;
+    border-bottom: 1px solid black;
+    text-align: left;
+    font-size: 15px;
+}
+
+#img{
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+footer{
+    text-align: center;
+    font-size: 15px;
+    justify-content: center;
+}
+
+.encabezado{
+    font-size: 12px;
+}
+
+.btnPrint{
+    z-index: 1;
+    position: fixed;
+    float: right;
+    text-align: center;
+    border-radius: 15px;
+    color: white;
+}
+
+.btnPrint button{
+    padding: 30px;
+    font-size: 40px;
+    background-color: #000;
+    color: white;
+    border-radius: 20px;
+}
+@media print {
+    .btnPrint{
+        display:none
+    }
+    .saltoDePagina{
+
+        page-break-before:always 
+    }
+}

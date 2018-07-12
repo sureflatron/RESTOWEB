@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5e1c9d0c-1d56-4186-af80-44e276c44f4b">
+	<property name="ireport.zoom" value="1.464100000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="6da97c18-80ae-44b3-bfa1-cc048aafe7ef"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idproducto" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idsucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+  'Saldo' as origen,
+  '0' as transaccion,
+  $P{fechaini} AS fecha,
+  STR_TO_DATE('12:00 AM', '%h:%i %p')  as hora,
+  saldoinicial.nombreAlmacen,
+  CAST(SUM(saldoinicial.ingresos) AS CHAR) AS ingresos,
+  CAST(SUM(saldoinicial.egresos) AS CHAR)AS egresos 
+FROM
+  (SELECT 
+    'Saldo' AS origen,
+    '0' AS transaccion,
+    now() AS fecha,
+     now()AS hora,
+    almacen.nombre AS nombreAlmacen,
+    detallecompra.cantidad AS ingresos,
+    '0' AS egresos 
+  FROM
+    almacen,
+    (
+      detallecompra 
+      JOIN compra 
+        ON (
+          (
+            (
+              compra.id = detallecompra.idcompra
+            ) 
+            AND (
+              `restopost`.`detallecompra`.`idProducto` = $P{idproducto}
+            ) 
+            AND (
+              `restopost`.`compra`.`eliminado` = 0
+            ) 
+            AND (
+              (
+                `restopost`.`compra`.`estado` = 1
+              ) 
+              OR (
+                `restopost`.`compra`.`estado` = 2
+              )
+            ) 
+            AND (
+              `restopost`.`compra`.`fecha` < $P{fechaini}
+            )
+          )
+        )
+    ) 
+  WHERE compra.idAlmacen = almacen.id 
+  AND almacen.idsucursal = $P{idsucursal}
+  UNION
+  ALL 
+  SELECT 
+    'Saldo' AS `origen`,
+    '0' AS `transaccion`,
+     now() AS `fecha`,
+     now() AS `hora`,
+    almacen.nombre AS nombreAlmacen,
+    `restopost`.`detalleinventario`.`cantidad` AS `ingresos`,
+    '0' AS `egresos` 
+  FROM
+    almacen,
+    (
+      `restopost`.`detalleinventario` 
+      JOIN `restopost`.`inventario` 
+        ON (
+          (
+            (
+              `restopost`.`inventario`.`id` = `restopost`.`detalleinventario`.`IdInventario`
+            ) 
+            AND (
+              `restopost`.`detalleinventario`.`idProducto` = $P{idproducto}
+            ) 
+            AND (
+              `restopost`.`inventario`.`eliminado` = 0
+            ) 
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+            AND (
+              `restopost`.`inventario`.`idtipoinventario` = 'Ingreso'
+            ) 
+            AND (
+              `restopost`.`inventario`.`fecha` < $P{fechaini}
+            )
+          )
+        )
+    ) 
+  WHERE inventario.idAlmacenDestino = almacen.id 
+  AND almacen.idsucursal = $P{idsucursal}
+  UNION
+  ALL 
+  SELECT 
+    'Saldo' AS `origen`,
+    '0' AS `transaccion`,
+     now() AS `fecha`,
+     now() AS `hora`,
+    almacen.nombre AS nombreAlmacen,
+    '0' AS `ingresos`,
+    `restopost`.`detalleventa`.`cantidad` AS `egresos` 
+  FROM
+    almacen,
+    (
+      `restopost`.`detalleventa` 
+      JOIN `restopost`.`venta` 
+        ON (
+          (
+            (
+              `restopost`.`venta`.`id` = `restopost`.`detalleventa`.`idVenta`
+            ) and
+detalleventa.estado = 2 
+            AND (
+              `restopost`.`detalleventa`.`idProducto` = $P{idproducto}
+            ) 
+            AND (`restopost`.`venta`.`estado` = 1) 
+            AND (
+              `restopost`.`venta`.`eliminado` = 0
+            ) 
+            AND (
+              `restopost`.`venta`.`fecha` < $P{fechaini}
+            )
+          )
+        )
+    ) 
+  WHERE venta.idAlmacen = almacen.id 
+  AND almacen.idsucursal = $P{idsucursal}
+  UNION
+  ALL 
+  SELECT 
+    'Saldo' AS origen,
+    '0' AS transaccion,
+     now() AS fecha,
+     now() AS hora,
+    almacen.nombre AS nombreAlmacen,
+    '0' AS ingreso,
+    restopost.detalleinventario.cantidad AS egresos 
+  FROM
+    almacen,
+    (
+      detalleinventario 
+      JOIN restopost.inventario 
+        ON (
+          (
+            (
+              restopost.inventario.id = restopost.detalleinventario.IdInventario
+            ) 
+            AND (
+              restopost.detalleinventario.idProducto = $P{idproducto}
+            ) 
+            AND (
+              restopost.inventario.eliminado = 0
+            )
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            ) 
+            AND (
+              restopost.inventario.idtipoinventario = 'Egreso'
+            ) 
+            AND (
+              restopost.inventario.fecha < $P{fechaini}
+            )
+          )
+        )
+    ) 
+  WHERE inventario.idAlmacen = almacen.id
+  AND almacen.idsucursal = $P{idsucursal}
+  union all
+  SELECT
+  'Saldo' AS origen,
+  0 AS transaccion,
+  now() AS fecha,
+  now() AS hora,
+  almacen.nombre as nombreAlmacen,
+  '0' AS ingreso,
+  restopost.detalleinventario.cantidad AS egresos
+FROM
+
+almacen,
+  (
+
+    detalleinventario
+  JOIN
+    restopost.inventario ON(
+      (
+        (
+          restopost.inventario.id = restopost.detalleinventario.IdInventario 
+        ) AND
+        (
+          restopost.detalleinventario.idProducto = $P{idproducto}
+        ) AND
+        (
+          restopost.inventario.eliminado = 0
+        )
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            ) AND
+        (
+          restopost.inventario.idtipoinventario = 'Traspaso'
+        ) AND
+        (
+          restopost.inventario.fecha < $P{fechaini}
+        ) 
+      )
+       
+    )
+      
+  )
+  WHERE inventario.idAlmacen = almacen.id
+  AND almacen.idsucursal = $P{idsucursal}
+union all
+
+
+select 'Saldo' AS `origen`,
+		0 AS `transaccion`,
+		now() AS `fecha`,
+        now() AS `hora`,
+         almacen.nombre as nombreAlmacen,
+		`restopost`.`detalleinventario`.`cantidad` as `ingresos`,
+		'0' as `egresos`
+from 
+almacen,
+(`restopost`.`detalleinventario`
+	join `restopost`.`inventario`
+	on(
+		(
+			(`restopost`.`inventario`.`id` = `restopost`.`detalleinventario`.`IdInventario`)
+			and (`restopost`.`detalleinventario`.`idProducto` =$P{idproducto} )
+			and (`restopost`.`inventario`.`eliminado` = 0)
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+			and (`restopost`.`inventario`.`idtipoinventario` = 'Traspaso')
+			and (`restopost`.`inventario`.`fecha` < $P{fechaini} )
+		)
+	)
+)
+WHERE inventario.idAlmacenDestino = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+) AS saldoinicial 
+
+union all
+
+SELECT 'Compra' AS `origen`,
+		`restopost`.`compra`.`id` AS `transaccion`,
+		`restopost`.`compra`.`fecha` AS `fecha`,
+        `restopost`.`compra`.`hora` AS `hora`,
+        almacen.nombre AS nombreAlmacen,
+		`restopost`.`detallecompra`.`cantidad` AS `ingresos`,
+		'0' AS `egresos`
+FROM 
+almacen,
+(`restopost`.`detallecompra`
+	JOIN `restopost`.`compra`
+	ON(
+		(
+			(`restopost`.`compra`.`id` = `restopost`.`detallecompra`.`idcompra`)
+			AND (`restopost`.`detallecompra`.`idProducto` = $P{idproducto})
+			AND (`restopost`.`compra`.`eliminado` = 0)
+     			AND ((`restopost`.`compra`.`estado` = 1)
+			OR(`restopost`.`compra`.`estado` = 2))
+			AND (`restopost`.`compra`.`fecha`BETWEEN $P{fechaini} AND $P{fechafin})
+		)
+	)
+)
+WHERE compra.idAlmacen = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+
+
+
+union all
+
+
+select 'Inventario (Ingreso)' AS `origen`,
+		`restopost`.`inventario`.`id` AS `transaccion`,
+		`restopost`.`inventario`.`fecha` AS `fecha`,
+        `restopost`.`inventario`.`hora` AS `hora`,
+         almacen.nombre as nombreAlmacen,
+		`restopost`.`detalleinventario`.`cantidad` as `ingresos`,
+		'0' as `egresos`
+from 
+almacen,
+(`restopost`.`detalleinventario`
+	join `restopost`.`inventario`
+	on(
+		(
+			(`restopost`.`inventario`.`id` = `restopost`.`detalleinventario`.`IdInventario`)
+			and (`restopost`.`detalleinventario`.`idProducto` =$P{idproducto} )
+			and (`restopost`.`inventario`.`eliminado` = 0)
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+			and (`restopost`.`inventario`.`idtipoinventario` = 'Ingreso')
+			and (`restopost`.`inventario`.`fecha`BETWEEN $P{fechaini} AND $P{fechafin})
+		)
+	)
+)
+WHERE inventario.idAlmacenDestino = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+union all
+
+SELECT
+  'Venta' AS `origen`,
+  `restopost`.`venta`.`id` AS `transaccion`,
+  `restopost`.`venta`.`fecha` AS `fecha`,
+  `restopost`.`venta`.`hora` AS `hora`,
+  almacen.nombre as nombreAlmacen,
+  '0' AS `ingresos`,
+  `restopost`.`detalleventa`.`cantidad` AS `egresos`
+FROM
+
+almacen,
+  (
+    `restopost`.`detalleventa`
+  JOIN
+    `restopost`.`venta` ON(
+      (
+        (
+          `restopost`.`venta`.`id` = `restopost`.`detalleventa`.`idVenta`
+        ) and
+detalleventa.estado = 2  AND
+        (
+          `restopost`.`detalleventa`.`idProducto` = $P{idproducto}
+        ) AND
+        (
+          `restopost`.`venta`.`estado` = 1
+        ) AND
+        (
+          `restopost`.`venta`.`eliminado` = 0
+        ) AND(
+          `restopost`.`venta`.`fecha` BETWEEN $P{fechaini} AND $P{fechafin}
+        ) and ( venta.alquiler = 1)
+      )
+    )
+  )
+  WHERE 
+  venta.idAlmacen = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+union all
+
+SELECT
+  'Inventario (Egreso)' AS origen,
+  restopost.inventario.id AS transaccion,
+  restopost.inventario.fecha AS fecha,
+  restopost.inventario.hora AS hora,
+  almacen.nombre as nombreAlmacen,
+  '0' AS ingreso,
+  restopost.detalleinventario.cantidad AS egresos
+FROM
+
+almacen,
+  (
+
+    detalleinventario
+  JOIN
+    restopost.inventario ON(
+      (
+        (
+          restopost.inventario.id = restopost.detalleinventario.IdInventario 
+        ) AND
+        (
+          restopost.detalleinventario.idProducto = $P{idproducto}
+        ) AND
+        (
+          restopost.inventario.eliminado = 0
+        ) 
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+AND
+        (
+          restopost.inventario.idtipoinventario = 'Egreso'
+        ) AND
+        (
+          restopost.inventario.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+        ) 
+      )
+       
+    )
+      
+  )
+  WHERE inventario.idAlmacen = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+union all
+
+SELECT
+  'Inventario (Traspaso)' AS origen,
+  restopost.inventario.id AS transaccion,
+  restopost.inventario.fecha AS fecha,
+  restopost.inventario.hora AS hora,
+  almacen.nombre as nombreAlmacen,
+  '0' AS ingreso,
+  restopost.detalleinventario.cantidad AS egresos
+FROM
+
+almacen,
+  (
+
+    detalleinventario
+  JOIN
+    restopost.inventario ON(
+      (
+        (
+          restopost.inventario.id = restopost.detalleinventario.IdInventario 
+        ) AND
+        (
+          restopost.detalleinventario.idProducto = $P{idproducto}
+        ) AND
+        (
+          restopost.inventario.eliminado = 0
+        )
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+ AND
+        (
+          restopost.inventario.idtipoinventario = 'Traspaso'
+        ) AND
+        (
+          restopost.inventario.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+        ) 
+      )
+       
+    )
+      
+  )
+  WHERE inventario.idAlmacen = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+
+union all
+
+
+select 'Inventario (Traspaso)' AS `origen`,
+		`restopost`.`inventario`.`id` AS `transaccion`,
+		`restopost`.`inventario`.`fecha` AS `fecha`,
+        `restopost`.`inventario`.`hora` AS `hora`,
+         almacen.nombre as nombreAlmacen,
+		`restopost`.`detalleinventario`.`cantidad` as `ingresos`,
+		'0' as `egresos`
+from 
+almacen,
+(`restopost`.`detalleinventario`
+	join `restopost`.`inventario`
+	on(
+		(
+			(`restopost`.`inventario`.`id` = `restopost`.`detalleinventario`.`IdInventario`)
+			and (`restopost`.`detalleinventario`.`idProducto` =$P{idproducto} )
+			and (`restopost`.`inventario`.`eliminado` = 0)
+AND (
+              `restopost`.`inventario`.`estado` = 1
+            )
+			and (`restopost`.`inventario`.`idtipoinventario` = 'Traspaso')
+			and (`restopost`.`inventario`.`fecha`BETWEEN $P{fechaini} AND $P{fechafin})
+		)
+	)
+)
+WHERE inventario.idAlmacenDestino = almacen.id
+AND almacen.idsucursal = $P{idsucursal}
+
+
+union all
+
+SELECT 
+  'Alquiler' AS `origen`,
+  `restopost`.`venta`.`id` AS `transaccion`,
+  `restopost`.`venta`.`fecha` AS `fecha`,
+  `restopost`.`venta`.`hora` AS `hora`,
+  almacen.nombre as nombreAlmacen,
+  if(detalleventa.estado <= 0,detalleventa.cantidad,0) AS `ingresos`,
+  if(detalleventa.estado >= 2,detalleventa.cantidad,0) `egresos`
+FROM
+
+almacen,
+  (
+    `restopost`.`detalleventa`
+  JOIN
+    `restopost`.`venta` ON(
+      (
+        (
+          `restopost`.`venta`.`id` = `restopost`.`detalleventa`.`idVenta`
+        ) AND
+        (
+          `restopost`.`detalleventa`.`idProducto` = $P{idproducto}
+        ) AND
+detalleventa.estado = 2 and
+        (
+          `restopost`.`venta`.`estado` = 1
+        ) AND
+        (
+          `restopost`.`venta`.`eliminado` = 0
+        ) AND(
+          `restopost`.`venta`.`fecha` BETWEEN $P{fechaini} AND $P{fechafin}
+        ) and venta.alquiler = 0
+      )
+    )
+  )
+  WHERE 
+  venta.idAlmacen = almacen.id
+
+  ORDER BY fecha desc,hora desc]]>
+	</queryString>
+	<field name="origen" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="transaccion" class="java.lang.String"/>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nombreAlmacen" class="java.lang.String"/>
+	<field name="ingresos" class="java.lang.String"/>
+	<field name="egresos" class="java.lang.String"/>
+	<variable name="variableTemporal" class="java.lang.Integer">
+		<variableExpression><![CDATA[IF (INTEGER_VALUE($F{ingresos})==0,-INTEGER_VALUE($F{egresos}),INTEGER_VALUE($F{ingresos}))]]></variableExpression>
+	</variable>
+	<variable name="total" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$V{total}]]></variableExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[INTEGER_VALUE($F{ingresos})-INTEGER_VALUE($F{egresos})]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="63" splitType="Stretch">
+			<staticText>
+				<reportElement x="442" y="40" width="41" height="20" uuid="147b46f4-7f3f-4ea6-8a5a-768347d2193e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="20" width="89" height="20" uuid="2ad7d2d1-8fe0-4283-a63a-bd9fe9588624"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="0" width="41" height="20" uuid="7619a60a-b69a-4ddc-ab5b-f119026925ad"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="0" width="89" height="20" uuid="a59d57a2-a0c9-4219-adb4-86dad7e6ce11"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="20" width="41" height="20" uuid="02699fd3-b11f-424b-900f-fea9c6ab458f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora :]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="483" y="40" width="89" height="20" uuid="5328cdaf-e8ab-4073-bcd6-f757c0a6c03a"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="156" height="20" uuid="56d0e752-80f5-4f39-bae1-60a2bea0619f"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="222" y="20" width="133" height="20" uuid="7e23e276-13b4-4dbc-930b-a4daef599545"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Kardex de Inventario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="40" width="19" height="20" uuid="853a8c64-410c-4704-8e14-54e94e7e6064"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Del]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="277" y="40" width="17" height="20" uuid="0543d093-e654-4c1f-83c5-742e7f98175b"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Al]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="212" y="40" width="65" height="20" uuid="40897644-96d8-476b-a63e-3f4ff9917ecd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{fechaini}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="294" y="40" width="75" height="20" uuid="10e48860-a98b-458f-8328-15f66a34ed9c"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{fechafin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="6" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="86" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="64" width="68" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="97d95038-3a9b-46f7-8176-6ed4c56cd898"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="125" y="64" width="84" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="d16d008c-2a3a-4245-b9a0-58cca4590403"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ ID Transaccion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="305" y="64" width="114" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="99f535e0-832e-45cb-9622-93e0b7e83ac7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Origen Transacccion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="419" y="64" width="50" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="abe8020b-d2b2-45f5-8ec6-869a7984c465"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Ingresos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="469" y="64" width="53" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="c1b0b240-62f7-4e73-99e8-dcf8124e4f27"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Egresos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="522" y="64" width="50" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="4f0fb151-fe1f-4341-a251-be4b5373f5bc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Saldo]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="209" height="64" uuid="8faab460-433e-4553-99bc-e3b5cd1ebade"/>
+				<subreportParameter name="idproducto">
+					<subreportParameterExpression><![CDATA[$P{idproducto}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreProducto.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement mode="Opaque" x="68" y="64" width="57" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="400ba343-825f-413e-8292-267236c98fef"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="209" y="64" width="96" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="276becc7-4cc3-4904-8d4b-0f60c53554b1"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Almacen]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="419" y="0" width="50" height="20" uuid="bf5d1cc1-627c-40f8-bc60-76d51c480a46"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ingresos} == null ? 0 : $F{ingresos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="469" y="0" width="53" height="20" uuid="9d970c51-92c5-4ff2-8862-c612bdfec565"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{egresos} == null ? 0 : $F{egresos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="522" y="0" width="50" height="20" uuid="d2436821-680a-47bc-b9cb-073d33c03fdc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{variable1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="68" height="20" uuid="1f73f2de-63e2-43f4-95c5-c3b86b0d74ee"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fecha})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="125" y="0" width="84" height="20" uuid="742b43db-675b-4bbd-b16f-df661cbd33e5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{transaccion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="305" y="0" width="113" height="20" uuid="9398d076-a61c-4256-9332-957587d7ada1"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{origen}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="68" y="0" width="57" height="20" uuid="1790e3ba-0bf2-40f4-ae65-e88708d5c98d"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format($F{hora})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="209" y="0" width="96" height="20" uuid="dcce8286-7ee2-4c3d-90ab-aa3182b9880a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nombreAlmacen} == null ? 0 : $F{nombreAlmacen}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="5" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="5" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="7" splitType="Stretch"/>
+	</summary>
+</jasperReport>

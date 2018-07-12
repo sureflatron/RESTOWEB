@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteFlujoCaja_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0779dfbe-73b1-4a4c-9beb-fdc67bdfe22a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idusuario" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select format(sum(Importe),2) as importeTotal
+FROM
+(
+(SELECT -(sum(Importe)) as importe
+FROM
+(
+SELECT
+  SUM(egreso.importe) AS Importe
+FROM
+  sucursal,egreso
+INNER JOIN
+  tipoegreso ON tipoegreso.id = egreso.idTipoEgreso
+INNER JOIN
+  puntoventa ON puntoventa.id = egreso.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado and empleado.id=$P{idusuario}
+WHERE
+  egreso.fecha BETWEEN $P{fechaini} AND $P{fechafin}  AND egreso.eliminado = 0 
+  and egreso.formapago = 1  and puntoventa.idSucursal = sucursal.id 
+ UNION all
+
+
+
+Select   sum(c.total) as Importe
+from sucursal,compra c
+inner JOIN puntoventa pv on   c.idPuntoVenta=pv.id
+ inner JOIN empleado e on e.id=pv.idEmpleado and e.id=$P{idusuario}
+ 
+where c.fecha BETWEEN  $P{fechaini}  AND $P{fechafin} and c.formaPago ='Efectivo' and c.estado = 1
+AND c.eliminado=0  and pv.idSucursal = sucursal.id 
+
+
+UNION ALL
+
+
+SELECT
+
+  SUM(cobroacuota.importe) AS importe
+FROM
+sucursal,
+  empleado,
+  puntoventa,
+  compra,
+  cobroacuota,
+  cuentaacobrar
+WHERE
+  compra.idPuntoVenta = puntoventa.id AND puntoventa.idEmpleado = empleado.id  AND compra.eliminado = 0 AND compra.formaPago = 'Credito' AND empleado.id =$P{idusuario} and  cuentaacobrar.idCompra = compra.id AND cobroacuota.idCuentaaCobrar = cuentaacobrar.id AND cobroacuota.fecha BETWEEN $P{fechaini} AND $P{fechafin} and compra.estado = 2
+AND puntoventa.idSucursal = sucursal.id 
+GROUP BY
+  cobroacuota.fecha,cobroacuota.hora
+
+
+
+UNION ALL
+
+SELECT SUM(importe) as Importe from (
+SELECT Compra.id,
+        compra.acuenta  AS importe
+    
+        FROM sucursal, Compra 
+        INNER JOIN puntoventa
+        INNER JOIN empleado
+        WHERE Compra.idpuntoventa=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+				   AND empleado.id=$P{idusuario}
+                   AND Compra.eliminado=0
+                   AND Compra.formaPago = 'Credito' and compra.fecha BETWEEN $P{fechaini} AND $P{fechafin}  and puntoventa.idSucursal = sucursal.id
+                   
+        ORDER BY id DESC)img
+
+
+
+) gg)
+
+
+union all
+
+
+
+
+
+SELECT sum(Importe) as importe
+FROM
+(
+SELECT
+   sum(ingreso.importe) AS Importe
+FROM
+  sucursal,ingreso
+INNER JOIN
+  tipoingreso ON tipoingreso.id = ingreso.idTipoIngreso
+ INNER JOIN
+  puntoventa ON puntoventa.id = ingreso.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado and empleado.id=$P{idusuario}
+WHERE
+  ingreso.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND ingreso.eliminado = 0
+  and ingreso.formapago = 1 and puntoventa.idSucursal = sucursal.id 
+ UNION all
+
+
+
+select Importe as Importe from (
+SELECT
+
+  (
+    venta.total - venta.`importedescuento`
+  ) as Importe,
+venta.id
+FROM
+  detalleventa
+INNER JOIN
+  producto ON producto.id = detalleventa.idProducto
+INNER JOIN
+  venta ON venta.id = detalleventa.idVenta
+INNER JOIN
+  puntoventa ON puntoventa.id = venta.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado AND empleado.id = $P{idusuario}
+INNER JOIN
+  sucursal ON sucursal.id = puntoventa.idSucursal 
+INNER JOIN
+  empresa ON empresa.id = sucursal.idEmpresa
+INNER JOIN
+  cliente ON cliente.`id` = venta.`idCliente`
+WHERE
+  venta.`eliminado` = 0 AND venta.estado = 1 AND venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND venta.formaPago = "Efectivo"  GROUP BY venta.id
+)asd
+
+UNION ALL
+
+
+
+
+SELECT
+  SUM(COBROCUOTA.importe) AS importe
+FROM
+sucursal,
+  empleado,
+  puntoventa,
+  venta,
+  COBROCUOTA,
+  CUENTACOBRAR
+WHERE
+  venta.idPuntoVenta = puntoventa.id AND puntoventa.idEmpleado = empleado.id AND empleado.id =$P{idusuario} AND venta.eliminado = 0 AND venta.formaPago = 'Credito' AND CUENTACOBRAR.idVenta = venta.id AND COBROCUOTA.IdCuentaCobrar = CUENTACOBRAR.id AND cobrocuota.fecha BETWEEN $P{fechaini} AND $P{fechafin} and venta.estado = 1  AND puntoventa.idSucursal = sucursal.id 
+GROUP BY
+  cobrocuota.fecha,cobrocuota.hora
+
+
+
+
+  
+  UNION ALL  
+    
+SELECT SUM(importe) as Importe from (
+SELECT venta.id,
+        
+        venta.acuenta AS importe
+
+        FROM sucursal,venta 
+        INNER JOIN puntoventa 
+        INNER JOIN empleado
+        WHERE venta.idPuntoVenta=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+				   AND empleado.id=$P{idusuario}
+                   AND venta.eliminado=0
+                   AND venta.formaPago = 'Credito' and venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND puntoventa.idSucursal = sucursal.id 
+        ORDER BY id DESC
+    
+    )img  
+    
+    
+) gg
+
+
+
+)gg]]>
+	</queryString>
+	<field name="importeTotal" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="141" height="20" uuid="61f492fa-1d06-482c-8a46-f2327f192a5f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{importeTotal} == null ? 0 : $F{importeTotal} )]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

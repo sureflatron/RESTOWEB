@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reponsableA" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="eb34a28a-0ffe-41b5-8675-e3f473dd9a77">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idinventario" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT DISTINCT empresa.nombre as nomempresa,empresa.imagen,empresa.web ,empresa.correo,inventario.estado ,almacen.nombre as almacen,inventario.idtipoinventario as tipoMovimiento,inventario.id,inventario.fecha, producto.codigoDeBarra,producto.precioVenta,inventario.glosa,motivomovimiento.nombre as motivoMovimiento1,producto.color,detalleinventario.total,detalleinventario.costo,producto.nombre as nombreProducto,marca.nombre as marca,producto.tamano,detalleinventario.cantidad,producto.stockMin,producto.stockMax,
+        (select origen.nombre 
+        	from origen
+        	where producto.idOrigen = origen.id) as origen,
+            empleado.nombre as responsable
+        from inventario 
+        INNER JOIN detalleinventario
+        INNER JOIN producto
+        INNER JOIN almacen
+        INNER JOIN empleado
+        INNER JOIN puntoventa
+        INNER JOIN sucursal
+        INNER JOIN empresa
+        INNER JOIN motivomovimiento
+        INNER JOIN marca
+        WHERE inventario.id = detalleinventario.IdInventario
+        and sucursal.idEmpresa=empresa.id
+        and detalleinventario.idProducto=producto.id
+        and almacen.id=inventario.idAlmacen
+        and inventario.idPuntoventa=puntoventa.id
+        and inventario.idMotivomovimiento = motivomovimiento.id
+        and producto.idMarca = marca.id
+        and almacen.idEmpleado = empleado.id
+and inventario.id=$P{idinventario}]]>
+	</queryString>
+	<field name="nomempresa" class="java.lang.String"/>
+	<field name="imagen" class="java.lang.Object">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="web" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="correo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="estado" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="almacen" class="java.lang.String"/>
+	<field name="tipoMovimiento" class="java.lang.String"/>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="codigoDeBarra" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="precioVenta" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="glosa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="motivoMovimiento1" class="java.lang.String"/>
+	<field name="color" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="costo" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nombreProducto" class="java.lang.String"/>
+	<field name="marca" class="java.lang.String"/>
+	<field name="tamano" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cantidad" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stockMin" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stockMax" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="origen" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="responsable" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="255" height="20" uuid="caf8bcde-b306-430d-b0d2-4b651166e7c6"/>
+				<textFieldExpression><![CDATA[$F{responsable}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

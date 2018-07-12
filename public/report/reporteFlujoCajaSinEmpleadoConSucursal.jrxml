@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="01c42c63-f61c-4623-8939-e736dca2c0de">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idsucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[(
+SELECT
+  Tipo,
+  id,
+  fecha,
+  hora,
+  empleado,
+  importe,
+  sucursal,
+  "Ingreso" AS IngresoEgreso
+FROM
+  (
+SELECT
+    tipoingreso.nombre AS Tipo,
+    ingreso.id AS id,
+    ingreso.fecha AS Fecha,
+    ingreso.hora AS hora,
+    empleado.nombre AS empleado,
+    ingreso.importe AS Importe,
+    sucursal.nombre as sucursal
+  FROM
+   sucursal,
+   ingreso
+  INNER JOIN
+    tipoingreso ON tipoingreso.id = ingreso.idTipoIngreso
+  INNER JOIN
+    puntoventa ON puntoventa.id = ingreso.idPuntoVenta
+  INNER JOIN
+    empleado ON empleado.id = puntoventa.idEmpleado
+  WHERE
+    ingreso.fecha BETWEEN $P{fechaini}  AND $P{fechafin}  AND ingreso.eliminado = 0 and ingreso.formapago = 1
+    and puntoventa.idSucursal = sucursal.id and sucursal.id = $P{idsucursal}
+ 
+
+ 
+UNION ALL
+
+
+
+SELECT DISTINCT
+  'Venta' AS Tipo,
+  venta.id AS id,
+  venta.fecha AS Fecha,
+  venta.hora,
+  empleado.nombre AS empleado,
+  (
+    venta.total - venta.`importedescuento`
+  ) AS importe,
+  sucursal.nombre as sucursal
+FROM
+  venta
+INNER JOIN
+  puntoventa ON puntoventa.id = venta.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+INNER JOIN
+  sucursal ON sucursal.id = puntoventa.idSucursal and sucursal.id = $P{idsucursal}
+INNER JOIN
+  empresa ON empresa.id = sucursal.idEmpresa
+INNER JOIN
+  cliente ON cliente.`id` = venta.`idCliente`
+WHERE
+  venta.`eliminado` = 0 AND venta.estado = 1 AND venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND venta.formaPago = "Efectivo" and venta.alquiler = 1 GROUP BY venta.id
+
+UNION ALL
+
+
+
+SELECT DISTINCT
+  'Alquiler' AS Tipo,
+  venta.id AS id,
+  venta.fecha AS Fecha,
+  venta.hora,
+  empleado.nombre AS empleado,
+  (
+    venta.total - venta.`importedescuento`
+  ) AS importe,
+  sucursal.nombre as sucursal
+FROM
+  venta
+INNER JOIN
+  puntoventa ON puntoventa.id = venta.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+INNER JOIN
+  sucursal ON sucursal.id = puntoventa.idSucursal and sucursal.id = $P{idsucursal}
+INNER JOIN
+  empresa ON empresa.id = sucursal.idEmpresa
+INNER JOIN
+  cliente ON cliente.`id` = venta.`idCliente`
+WHERE
+  venta.`eliminado` = 0 AND venta.estado = 1 AND venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND venta.formaPago = "Efectivo" and venta.alquiler = 0 GROUP BY venta.id
+
+
+
+UNION ALL
+
+
+
+
+SELECT
+  'Pago Creditos' as Tipo,
+  venta.id as id,
+
+  COBROCUOTA.fecha,
+  COBROCUOTA.hora as hora,
+  empleado.nombre as empleado,
+  SUM(COBROCUOTA.importe) AS importe,
+  sucursal.nombre as sucursal
+FROM
+sucursal,
+  empleado,
+  puntoventa,
+  venta,
+  COBROCUOTA,
+  CUENTACOBRAR
+WHERE
+  venta.idPuntoVenta = puntoventa.id AND puntoventa.idEmpleado = empleado.id 
+ AND venta.eliminado = 0 AND venta.formaPago = 'Credito' AND CUENTACOBRAR.idVenta = venta.id AND COBROCUOTA.IdCuentaCobrar = CUENTACOBRAR.id AND cobrocuota.fecha BETWEEN $P{fechaini} AND $P{fechafin} and venta.estado = 1
+  AND puntoventa.idSucursal = sucursal.id and sucursal.id = $P{idsucursal}
+GROUP BY
+  cobrocuota.fecha,cobrocuota.hora
+
+
+
+
+ UNION ALL
+ 
+    
+     SELECT 'Pago Inicial Ventas' as Tipo,venta.id,
+        venta.fecha,
+venta.hora,
+        empleado.nombre as empleado,
+        venta.aCuenta as importe,
+sucursal.nombre as sucursal
+        FROM sucursal,venta 
+        INNER JOIN puntoventa 
+        INNER JOIN empleado
+        WHERE venta.idPuntoVenta=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+                   
+                   AND venta.eliminado=0 and venta.estado =1
+                   AND venta.formaPago = 'Credito' and venta.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+                   AND puntoventa.idSucursal = sucursal.id and sucursal.id = $P{idsucursal}
+        
+
+
+
+
+
+
+
+
+) tmp
+)
+UNION ALL
+  (
+  SELECT
+    Tipo,
+    id,
+    fecha,
+    hora,
+    empleado,
+    importe,
+	sucursal,
+    "Egreso" AS IngresoEgreso
+  FROM
+    (
+	
+SELECT
+      tipoegreso.nombre AS Tipo,
+      egreso.id AS id,
+      egreso.fecha AS Fecha,
+      egreso.hora AS hora,
+      empleado.nombre AS empleado,
+      egreso.importe AS Importe,
+      sucursal.nombre as sucursal
+    FROM
+      sucursal,egreso
+    INNER JOIN
+      tipoegreso ON tipoegreso.id = egreso.idTipoEgreso
+    INNER JOIN
+      puntoventa ON puntoventa.id = egreso.idPuntoVenta
+    INNER JOIN
+      empleado ON empleado.id = puntoventa.idEmpleado 
+    WHERE
+      egreso.fecha BETWEEN $P{fechaini}  AND $P{fechafin}  AND egreso.eliminado = 0 and egreso.formapago = 1
+      and puntoventa.idSucursal = sucursal.id and sucursal.id = $P{idsucursal}
+	  
+	  
+    UNION ALL
+	
+	
+SELECT
+    'Compras' AS Tipo,
+    c.ID AS id,
+    c.fecha AS Fecha,
+    c.hora,
+    e.nombre AS empleado,
+    c.total AS importe,
+    sucursal.nombre as sucursal
+  FROM
+    sucursal,compra c
+  INNER JOIN
+    puntoventa pv ON c.idPuntoVenta = pv.id
+  INNER JOIN
+    empleado e ON e.id = pv.idEmpleado
+  WHERE
+    c.fecha BETWEEN $P{fechaini} AND $P{fechafin}  AND e.eliminado = 0 and formaPago = "Efectivo" and c.estado = 1 AND pv.idSucursal = sucursal.id
+    AND sucursal.id = $P{idsucursal}
+
+
+
+UNION ALL
+
+
+SELECT
+  'Pago Creditos' as Tipo,
+  compra.id as id,
+  cobroacuota.fecha,
+  cobroacuota.hora as hora,
+
+  empleado.nombre as empleado,
+  SUM(cobroacuota.importe) AS importe,
+  sucursal.nombre as sucursal
+FROM
+sucursal,
+  empleado,
+  puntoventa,
+  compra,
+  cobroacuota,
+  cuentaacobrar
+WHERE
+  compra.idPuntoVenta = puntoventa.id AND puntoventa.idEmpleado = empleado.id  AND compra.eliminado = 0 
+  AND compra.formaPago = 'Credito'  and  cuentaacobrar.idCompra = compra.id 
+  AND cobroacuota.idCuentaaCobrar = cuentaacobrar.id 
+  AND cobroacuota.fecha BETWEEN $P{fechaini} AND $P{fechafin} and compra.estado = 2
+  AND puntoventa.idSucursal = sucursal.id AND sucursal.id = $P{idsucursal}
+GROUP BY
+  cobroacuota.fecha,cobroacuota.hora
+
+
+UNION ALL
+
+
+SELECT 'Pago Inicial Compras' as Tipo,
+		Compra.id as id,
+        Compra.fecha as Fecha,
+		Compra.hora,
+		empleado.nombre as empleado,
+        compra.Acuenta as importe,
+    sucursal.nombre as sucursal
+        FROM sucursal,Compra 
+        INNER JOIN puntoventa
+        INNER JOIN empleado
+        WHERE Compra.idpuntoventa=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+                   AND Compra.eliminado=0
+                   AND Compra.formaPago = 'Credito' and compra.fecha BETWEEN $P{fechaini} AND $P{fechafin} and puntoventa.idSucursal = sucursal.id
+                   AND sucursal.id = $P{idsucursal}
+
+
+       
+
+
+  ) tmp
+) order by IngresoEgreso desc,fecha asc,hora asc]]>
+	</queryString>
+	<field name="Tipo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="empleado" class="java.lang.String"/>
+	<field name="importe" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="IngresoEgreso" class="java.lang.String"/>
+	<variable name="importe_2" class="java.math.BigDecimal" resetType="Group" resetGroup="TipoIngresoEgreso" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<group name="TipoIngresoEgreso">
+		<groupExpression><![CDATA[$F{IngresoEgreso}]]></groupExpression>
+		<groupHeader>
+			<band height="40">
+				<textField>
+					<reportElement x="0" y="0" width="210" height="20" uuid="762d488f-71eb-4d85-aaae-c9ff17fa25f3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{IngresoEgreso}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="20" width="210" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="40592f78-a5e0-4942-be3f-3737ce819b30"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Tipo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="299" y="20" width="114" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="f66d0b07-3680-4599-9674-c9016a9054aa"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Fecha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="516" y="20" width="110" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="5f572e24-ae2f-47af-a06d-95966601e81e"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Empleado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="626" y="20" width="126" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="f3a3e803-533c-476e-a75f-81ce59c6397e"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Importe]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="210" y="20" width="89" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="f3ec147c-3e41-463d-8327-77928eb921c2"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[ ID]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="413" y="20" width="103" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="13d6c1a9-18a8-4132-b497-947a45541b8e"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Hora]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<staticText>
+					<reportElement x="516" y="0" width="110" height="20" uuid="4c25c29d-a7dc-4b2f-8e83-77bb87cce407"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="14" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+				<textField pattern="###0.00">
+					<reportElement x="626" y="0" width="126" height="20" uuid="82b9a8cd-3044-4af6-9cf7-ef6c451a47a6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="14"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new Double(String.valueOf($V{importe_2}))]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<staticText>
+				<reportElement x="516" y="0" width="110" height="20" uuid="338f6c2c-332e-40db-9912-5fac347b4f6f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="516" y="20" width="110" height="20" uuid="81e4e9e5-ff40-44eb-b5a7-deee7d8f98d7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="516" y="40" width="110" height="20" uuid="b38b50e7-14dc-471e-a94a-b3bae75d87eb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="626" y="0" width="126" height="20" uuid="45a2588d-391d-4a0a-a934-203f0880e588"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="626" y="20" width="126" height="20" uuid="dc093d15-c08b-4a33-8549-ecd2f7ae09e6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="210" y="20" width="306" height="20" uuid="6f43992b-d15d-490e-bac2-0288fa9649ba"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DEL FLUJO DE CAJA]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="210" height="20" uuid="4f05b636-9b89-47f3-89d1-07eac7c14446"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="626" y="40" width="126" height="20" uuid="4333adef-f352-4711-9177-bc29af008896"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="210" y="60" width="306" height="20" uuid="4f98fba1-1881-4617-9b57-aa0c85aac162"/>
+				<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="60" width="210" height="20" uuid="711731a0-cba6-4140-9a77-5d384ad15f73"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sucursal :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="40" width="306" height="20" uuid="49592c4b-768c-44e7-8829-e91f27eb1654"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Del   "+$P{fechaini}+"     Al   "+$P{fechafin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="1" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="1" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="210" height="20" uuid="c93f2e33-b52a-4155-8edd-51bfd7e55835"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="413" y="0" width="103" height="20" uuid="28690803-1b5d-40d6-a3ea-889e7f678352"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format($F{hora})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="299" y="0" width="114" height="20" uuid="b74d1291-be24-4757-ba07-420fd2efaaf8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fecha})]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="626" y="0" width="126" height="20" uuid="3d0817bc-2a5e-4748-a26f-81e7d66c8209"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new Double(String.valueOf($F{importe}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="89" height="20" uuid="23ab367d-0f52-4699-a5b5-e77a8035e479"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="516" y="0" width="110" height="20" uuid="d84cb985-d84e-40b8-9ebc-f463864fb83e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{empleado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="4" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="5" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="140" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="20" width="210" height="20" uuid="8400ae0e-683c-4037-9c9d-b3d9acb33aca"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Total Ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="351" height="20" uuid="95481ecd-832a-49db-999a-ef73d1e4d783"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESUMEN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="210" height="20" uuid="2a6e2463-e553-4240-b571-85b9f757f8d4"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Total Egreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="210" height="20" uuid="e7d6cbb8-e09f-4d6b-9959-3605f43d97d9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="80" width="210" height="20" uuid="17500d96-fae1-438f-ac90-54a24042b63e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cobrado con tarjeta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="100" width="210" height="20" uuid="245a2f8f-61e6-42d9-92b1-e92042d4783e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cobrado con Cheque]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="120" width="210" height="20" uuid="834f9dbc-a306-4815-8d8b-0b4c356e09e6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cobrado con Banco]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="210" y="20" width="89" height="20" uuid="09f14967-61d8-4c55-9285-eb225c948a62"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\sumaIngresoSinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="210" y="40" width="89" height="20" uuid="4e9d4e5f-cea8-4eaa-ab38-936667e9f140"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\sumaEgresoSinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="210" y="60" width="89" height="20" uuid="e2641942-27e8-4f2a-b98f-cf36ddae4f15"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\reporteFlujoCaja_subreport1SinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="210" y="80" width="89" height="20" uuid="fe7283c9-dc2f-4c62-96d3-1bd9cc57badd"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\sumaConTarjetaSinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="210" y="100" width="89" height="20" uuid="741376f8-7c8e-4171-a3d9-7bd2da9b4722"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\sumaConChequeSinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="210" y="120" width="89" height="20" uuid="454725ed-0318-4c2a-b7f6-dd55c2409555"/>
+				<subreportParameter name="fechaini">
+					<subreportParameterExpression><![CDATA[$P{fechaini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechafin">
+					<subreportParameterExpression><![CDATA[$P{fechafin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="idsucursal">
+					<subreportParameterExpression><![CDATA[$P{idsucursal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\sumaConBancoSinEmpleadoConSucursal.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

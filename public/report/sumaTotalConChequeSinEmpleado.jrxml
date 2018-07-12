@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sumaTotalConCheque" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2bf8267a-1269-42af-a2c6-7661fdc4fdb9">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select sum(Importe) as importeTotal
+FROM
+(
+(SELECT -(sum(Importe)) as importe
+FROM
+(
+SELECT
+  SUM(egreso.importe) AS Importe
+FROM
+  egreso
+INNER JOIN
+  tipoegreso ON tipoegreso.id = egreso.idTipoEgreso
+INNER JOIN
+  puntoventa ON puntoventa.id = egreso.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+WHERE
+  egreso.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND egreso.eliminado = 0 
+ UNION all
+ Select   sum(c.total) as importe
+from compra c
+inner JOIN puntoventa pv on   c.idPuntoVenta=pv.id
+ inner JOIN empleado e on e.id=pv.idEmpleado
+where c.fecha BETWEEN  $P{fechaini} AND $P{fechafin}
+AND c.eliminado=0
+) gg)
+
+
+union all
+
+
+(SELECT sum(Importe) as importe
+FROM
+(
+SELECT
+   sum(ingreso.importe) AS Importe
+FROM
+  ingreso
+INNER JOIN
+  tipoingreso ON tipoingreso.id = ingreso.idTipoIngreso
+ INNER JOIN
+  puntoventa ON puntoventa.id = ingreso.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+WHERE
+  ingreso.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+     AND ingreso.eliminado = 0 
+ UNION all
+ Select    sum(f.total) as importe
+from venta v
+inner JOIN puntoventa pv on   v.idPuntoVenta=pv.id
+ inner JOIN empleado e on e.id=pv.idEmpleado
+inner JOIN factura f on f.idVenta=v.id 
+where v.fecha BETWEEN  $P{fechaini} AND $P{fechafin}
+AND v.estado=1
+and f.eliminado=0
+    and v.formaPago='Efectivo'
+) gg)
+
+union all
+
+(SELECT sum(Importe) as importe
+FROM
+(
+ Select   f.total as importe
+from venta v
+inner JOIN puntoventa pv on   v.idPuntoVenta=pv.id
+ inner JOIN empleado e on e.id=pv.idEmpleado
+inner JOIN factura f on f.idVenta=v.id and f.eliminado=0
+where v.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+AND v.estado=1 and v.formaPago in ('Tarjeta de Debito','Tarjeta de Credito')
+) gg)
+
+union all
+
+(SELECT sum(Importe) as importe
+FROM
+(
+ Select   f.total as importe
+from venta v
+inner JOIN puntoventa pv on   v.idPuntoVenta=pv.id
+ inner JOIN empleado e on e.id=pv.idEmpleado
+inner JOIN factura f on f.idVenta=v.id and f.eliminado=0
+where v.fecha BETWEEN $P{fechaini}  AND $P{fechafin}
+AND v.estado=1 and v.formaPago = 'Cheque'
+) gg)
+
+)gg]]>
+	</queryString>
+	<field name="importeTotal" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="33" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="141" height="20" uuid="c619a90a-3e26-484e-80c5-df67f4379b30"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importeTotal}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

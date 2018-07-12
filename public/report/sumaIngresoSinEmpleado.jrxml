@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sumaIngreso" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="74d1e054-094a-444f-897c-8a92da495b7c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT format(sum(Importe),2) as importe
+FROM
+(
+SELECT
+   sum(ingreso.importe) AS Importe
+FROM
+sucursal,
+  ingreso
+INNER JOIN
+  tipoingreso ON tipoingreso.id = ingreso.idTipoIngreso
+ INNER JOIN
+  puntoventa ON puntoventa.id = ingreso.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+WHERE
+  ingreso.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND ingreso.eliminado = 0
+  and ingreso.formapago = 1  and puntoventa.idSucursal = sucursal.id 
+ UNION all
+
+
+
+select Importe as Importe from (
+SELECT
+
+  (
+    venta.total - venta.`importedescuento`
+  ) as Importe,
+venta.id
+FROM
+  venta
+INNER JOIN
+  puntoventa ON puntoventa.id = venta.idPuntoVenta
+INNER JOIN
+  empleado ON empleado.id = puntoventa.idEmpleado
+INNER JOIN
+  sucursal ON sucursal.id = puntoventa.idSucursal
+INNER JOIN
+  empresa ON empresa.id = sucursal.idEmpresa
+INNER JOIN
+  cliente ON cliente.`id` = venta.`idCliente`
+WHERE
+  venta.`eliminado` = 0 AND venta.estado = 1 AND venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND venta.formaPago = "Efectivo" GROUP BY venta.id
+
+)asd
+
+UNION ALL
+
+
+
+
+SELECT
+
+  SUM(COBROCUOTA.importe) AS importe
+FROM
+sucursal,
+  empleado,
+  puntoventa,
+  venta,
+  COBROCUOTA,
+  CUENTACOBRAR
+WHERE
+  venta.idPuntoVenta = puntoventa.id AND puntoventa.idEmpleado = empleado.id AND venta.eliminado = 0 AND venta.formaPago = 'Credito' AND CUENTACOBRAR.idVenta = venta.id AND COBROCUOTA.IdCuentaCobrar = CUENTACOBRAR.id AND cobrocuota.fecha BETWEEN $P{fechaini} AND $P{fechafin} and venta.estado = 1  AND puntoventa.idSucursal = sucursal.id 
+GROUP BY
+  cobrocuota.fecha,cobrocuota.hora
+  
+  UNION ALL  
+    
+SELECT SUM(importe) as Importe from (
+SELECT venta.id,
+        
+        venta.acuenta AS importe
+
+        FROM sucursal,venta 
+        INNER JOIN puntoventa 
+        INNER JOIN empleado
+        WHERE venta.idPuntoVenta=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+                   AND venta.eliminado=0
+                   AND venta.formaPago = 'Credito' and venta.fecha BETWEEN $P{fechaini} AND $P{fechafin} AND puntoventa.idSucursal = sucursal.id 
+        ORDER BY id DESC
+    
+    )img  
+    
+    
+) gg]]>
+	</queryString>
+	<field name="importe" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="variable1" class="java.lang.String">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="141" height="20" uuid="3b1c1d6b-1f83-4af3-96cc-de8c8eb62aee"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{importe} == null ? 0 : $F{importe} )]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

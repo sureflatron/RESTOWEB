@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="84ef872d-410a-4435-ae82-027c9b569e4a">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="174"/>
+	<parameter name="idventa" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+venta.id,
+producto.nombre as producto,
+COUNT( detalleventa.cantidad) as cantidad,
+SUM(detalleventa.total) as total,
+(SELECT sum(total) FROM detalleventa WHERE idVenta=$P{idventa}) as Totalneto,
+cliente.nombre as cliente,cliente.celular,venta.fechaentrega as fechaoptica
+FROM 
+  detalleventa
+INNER JOIN
+  venta ON venta.id = detalleventa.idVenta
+INNER JOIN
+	producto on producto.id=detalleventa.idProducto
+ LEFT JOIN 
+ 	cliente on cliente.id=venta.idCliente
+WHERE
+  venta.id =  $P{idventa}
+  GROUP by producto.id]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="producto" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Totalneto" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="celular" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fechaoptica" class="java.sql.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="212" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="136" splitType="Stretch">
+			<textField>
+				<reportElement x="59" y="71" width="264" height="20" uuid="69f056ee-7840-4267-b68a-48b7ba4c6308"/>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="418" y="71" width="100" height="20" uuid="1e3cd299-077b-4f9b-b850-d85dd98cd89a"/>
+				<textFieldExpression><![CDATA[$F{celular}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="71" width="57" height="20" uuid="31859a1e-d2d7-4bc6-a8d2-a29e75fad338"/>
+				<text><![CDATA[CLIENTE :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="353" y="71" width="65" height="20" uuid="01203de2-7059-4976-ab9f-8c00a4ff6116"/>
+				<text><![CDATA[CELULAR :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="109" width="121" height="20" uuid="dd6d90b4-8b4f-4a25-a19f-2def5f72da65"/>
+				<text><![CDATA[FECHA DE ENTREGA :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="237" y="17" width="79" height="20" uuid="7d423e24-dea9-4d70-a86e-73aec2783bdc"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[RECIBO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="185" y="37" width="100" height="20" uuid="759dba41-92ee-4754-92fa-5bdf5677cbf5"/>
+				<text><![CDATA[NUMERO # :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="285" y="37" width="65" height="20" uuid="3983b8bf-69cd-4de8-b3b6-af8c77070ab3"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="450" y="2" width="100" height="56" uuid="548ae0db-0a03-43b5-b0b7-25f7e3a993ea"/>
+				<text><![CDATA[Rene Moreno N#19
+Telef.:3-327755
+Santa Cruz - Bolivia]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="118" y="109" width="100" height="20" uuid="1dbcb3e3-7cdc-461a-935b-7a8f1f0324a5"/>
+				<textFieldExpression><![CDATA[$F{fechaoptica}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="5" y="2" width="99" height="50" uuid="266b8786-6559-4798-ab62-385bbe91a7d7"/>
+				<imageExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\logo.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement x="111" y="0" width="100" height="20" uuid="76f04ab9-e14e-401a-b4a5-4923676618f5"/>
+				<text><![CDATA[PRODUCTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="218" y="0" width="100" height="20" uuid="0ab601d3-df5b-4874-9220-7230d241e8fe"/>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="323" y="0" width="100" height="20" uuid="83ba046e-2428-4f15-ba5d-92a28c930def"/>
+				<text><![CDATA[SUBTOTAL]]></text>
+			</staticText>
+			<line>
+				<reportElement x="108" y="20" width="310" height="1" uuid="39bff0ea-6d01-4ff2-a3a4-613b03df4365"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="111" y="0" width="100" height="20" uuid="b738d537-8fac-46be-a2ab-c534330ef7d6"/>
+				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="216" y="1" width="100" height="20" uuid="e5612d21-366f-4462-a044-5ba6a875d01f"/>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="321" y="1" width="102" height="20" uuid="1cf96a7c-2e23-4264-9131-b235c9e7952d"/>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="11" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="318" y="15" width="100" height="20" uuid="29c8bf61-02cf-4c0f-9804-bf9c1efab82b"/>
+				<textFieldExpression><![CDATA[$F{Totalneto}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="237" y="15" width="100" height="20" uuid="8cf360f4-6baf-4f27-aeb8-b54e66d78116"/>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<line>
+				<reportElement x="111" y="14" width="325" height="1" uuid="062ec3d5-9e53-491e-928c-a569521dba95"/>
+			</line>
+			<line>
+				<reportElement x="213" y="-96" width="1" height="111" uuid="06a09442-bb44-49d1-9a81-d0cfe5312f01"/>
+			</line>
+			<line>
+				<reportElement x="319" y="-96" width="1" height="111" uuid="f45eb1a0-b6af-4b4b-ba56-7f140c545018"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

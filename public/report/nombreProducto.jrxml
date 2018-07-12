@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="nombreProducto" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="372ebc3e-3822-4708-b74d-54f8743379bf">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<parameter name="idproducto" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     producto.`id` AS producto_id,
+producto.codigodebarra,
+     producto.`nombre` AS producto_nombre,
+marca.nombre as marca
+FROM
+marca,
+     `producto` producto
+where producto.id = $P{idproducto}
+and producto.idmarca = marca.id]]>
+	</queryString>
+	<field name="producto_id" class="java.lang.Integer"/>
+	<field name="codigodebarra" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="producto_nombre" class="java.lang.String"/>
+	<field name="marca" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="65" splitType="Stretch">
+			<textField>
+				<reportElement x="143" y="20" width="253" height="20" uuid="0202b6e9-f200-4579-b07c-db2224c9b5ee"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{producto_nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="143" y="0" width="253" height="20" uuid="5325432b-05b8-4c75-a0b7-d5bc6921f825"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{codigodebarra}.equals(null)) ? "" : $F{codigodebarra})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="143" y="40" width="253" height="20" uuid="31c7231c-9fd0-41f2-bdfa-c10c9783f319"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{marca}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="143" height="20" uuid="088d6bdb-769c-401d-aca3-7f73444ae272"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codigo de Barra:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="143" height="20" uuid="90dc5a0e-8496-44bc-a24f-0c5ee703be81"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Marca:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="143" height="20" uuid="02ebedd1-05de-4044-8919-443b4a6aee02"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

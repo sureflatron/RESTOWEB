@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bb600ce9-d391-466e-bf24-8ab8b8b65da4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idsucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechainicio" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+  venta.id,
+  cuentacobrar.`fechaVencimiento`,
+  cuentacobrar.`importe`,
+  IF(
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`) IS NULL,
+    0,
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`)
+  ) AS totalCobrado,
+  venta.`fecha`,
+  venta.`hora`,
+  venta.id AS idventa,
+  cliente.nombre AS cliente,
+  cliente.`NIT` AS nitcliente,
+  cliente.telefonoFijo,
+  cliente.correo,
+  cliente.celular,
+  cliente.direccion,
+  empleado.`nombre` AS vendedor,
+  sucursal.nombre as sucursal 
+FROM
+  cuentacobrar,
+  venta,
+  cliente,
+  empleado,
+  puntoventa,
+  sucursal 
+WHERE venta.id = `cuentacobrar`.`idVenta` 
+  AND venta.`eliminado` = 0 
+  AND venta.`alquiler` = 1 
+  AND venta.`formaPago` = 'Credito' 
+  AND venta.`estado` = 1 
+  AND cliente.`id` = venta.`idCliente` 
+  AND empleado.id = `puntoventa`.`idEmpleado` 
+  AND `puntoventa`.id = venta.`idPuntoVenta` 
+  AND `cuentacobrar`.`fechaVencimiento` BETWEEN $P{fechainicio} AND $P{fechafin}
+   AND sucursal.id = puntoventa.idSucursal 
+  AND `cuentacobrar`.`importe` <> IF(
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`) IS NULL,
+    0,
+    (SELECT 
+      SUM(cobrocuota.`importe`) 
+    FROM
+      cobrocuota 
+    WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`)
+  )
+  AND sucursal.id = $P{idsucursal}]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fechaVencimiento" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="importe" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="totalCobrado" class="java.lang.Double"/>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="idventa" class="java.lang.Integer"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="nitcliente" class="java.lang.String"/>
+	<field name="telefonoFijo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="correo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="celular" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="vendedor" class="java.lang.String"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement x="361" y="-1" width="68" height="20" uuid="d4a5730b-d3d0-4678-8206-c9ead88b6e3b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="59" width="64" height="20" uuid="51dab3bd-270f-4409-b4b7-1879749ce283"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SUCURSAL:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="-1" width="210" height="20" uuid="1eaea98b-dde2-44c6-b32d-113500b82e43"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="361" y="39" width="68" height="20" uuid="c9b11c67-8441-46ff-abd5-44e7ea76bdae"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empleado:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="19" width="68" height="20" uuid="0cb42b10-4999-46b1-86ef-1e2dfd042082"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="429" y="-1" width="126" height="20" uuid="816fe70f-5980-427b-92e2-3cd2f35200f1"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="64" y="19" width="297" height="20" uuid="9fbb76f0-c02a-4b87-88bf-6a35a4883274"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTADO DE CUOTAS ATRASADAS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="429" y="19" width="126" height="20" uuid="4d0dd9e7-352f-4183-afa9-5278cd5f77cf"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="429" y="39" width="126" height="20" uuid="a49d6ce1-1b33-4b93-9e71-cadd6b6869c7"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="64" y="59" width="297" height="20" uuid="1cd442be-ded4-4d26-b98c-e867749465df"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="79" width="64" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="12fdb5b2-26d9-4049-b7b1-3591d8c680d1"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cod. Venta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="64" y="79" width="146" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6462d64d-80d3-4a1a-963d-88f71b4b9d5b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empleado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="429" y="79" width="68" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="42fb2962-2f32-428c-b779-8f7e3f41d8eb"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Cuota]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="497" y="79" width="58" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="efe41fbe-cf7e-4d8a-b27b-83ba5694e9b0"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pagado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="361" y="79" width="68" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="39ca67eb-9dc7-4faa-803b-fa55924b032c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Venc.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="210" y="79" width="90" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="ff3a9d5f-89e0-4740-b2ec-abb1e049463d"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="300" y="79" width="61" height="20" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6c5854bf-f811-4524-a797-8fb897900b5b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIT]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="64" y="39" width="297" height="20" uuid="0041b3b1-d311-4fb4-9a56-90b32d5d0482"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Del "+$P{fechainicio}+"   Al "+$P{fechafin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="3" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="3" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="64" height="20" uuid="c89aff51-58ef-4809-9bb9-bd67f8ef3d1a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idventa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="64" y="0" width="146" height="20" uuid="25b100cd-3e16-438b-8411-0ca99a13eaa2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{vendedor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="61" height="20" uuid="d1700869-6a71-45da-aa0d-c63be7a3f212"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nitcliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="90" height="20" uuid="07fb3b53-0ad4-412e-9bad-99c08a4601f1"/>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="361" y="0" width="68" height="20" uuid="679c338b-e7be-4b34-b60d-f230a80b4849"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fechaVencimiento})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="429" y="0" width="68" height="20" uuid="6ca7ab5b-a7d0-4b1b-917e-37860e41dc38"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="497" y="0" width="58" height="20" uuid="8206b4fa-eb52-4ac9-b2d7-3d714e8c8948"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{totalCobrado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="3" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="2" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

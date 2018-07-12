@@ -1,0 +1,30 @@
+ 
+a {
+  color: #5D6975;
+  text-decoration: underline;
+}
+ table {
+    
+   width: 100%;
+   
+}
+th, td {
+   width: 20%;
+   text-align: left;
+   vertical-align: top;
+    
+   padding: 0.3em;
+   caption-side: bottom;
+}
+caption {
+   padding: 0.3em;
+   color: #fff;
+    background: #000;
+}
+th {
+   background: #eee;
+}
+p {
+
+}
+ 

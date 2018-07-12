@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0b02413b-cda2-4b10-aff1-c212ed9e6234">
+	<property name="ireport.zoom" value="1.2100000000000009"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="463"/>
+	<parameter name="id" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT  
+ opticarecibo.id as idoptica,
+ producto.nombre,
+ detalleventa.cantidad,
+ cliente.nombre AS NOMBRECLIENTE2,
+  opticarecibo.nombrecliente,
+  opticarecibo.laboratorio,
+ 
+  CILlejos,
+  EJElejos,
+  PRISMAlejos,
+  DIlejos,
+  ESFlejos,
+  ESFCerca,
+  CILCerca,
+  EJECerca,
+  PRISMACerca,
+  DICerca,
+  ORGANICO,
+  POLICARBONATO,
+  HIGHLITE,
+  HIGHINDEX,
+  VIDRIO,
+  BLANCO,
+  ANTIRREFLEX,
+  FOTOCROMATICO,
+  CONTINTE,
+  SENCILLA,
+  BIFOCAL,
+  PROGRESIVO,
+  FUTUREX,
+  opticarecibo.total,
+  opticarecibo.fecha,
+  opticarecibo.totalcliente,
+  ESFLejosizquierdo,
+  CILLejosizquierdo,
+  EJELejosizquierdo,
+  PRISMALejosizquierdo,
+  DILejosizquierdo,
+  ESFCercaizquierdo,
+  CILCercaizquierdo,
+  EJECercaizquierdo,
+  PRISMACercaizquierdo,
+   DICercaizquierdo,totalcliente,
+venta.id as iddelaventa
+FROM
+  opticarecibo
+  INNER JOIN
+  venta ON venta.id=opticarecibo.idventa AND venta.id= $P{id}
+  LEFT JOIN 
+  cliente ON cliente.id=venta.idCliente
+  INNER JOIN
+  detalleventa ON detalleventa.idVenta=venta.id
+  INNER JOIN
+  producto ON producto.id=detalleventa.idProducto
+  
+  WHERE opticarecibo.id=detalleventa.idopticarecibo
+ 
+GROUP BY  detalleventa.id]]>
+	</queryString>
+	<field name="idoptica" class="java.lang.Integer"/>
+	<field name="nombre" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cantidad" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="NOMBRECLIENTE2" class="java.lang.String"/>
+	<field name="nombrecliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="laboratorio" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CILlejos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="EJElejos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRISMAlejos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DIlejos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ESFlejos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ESFCerca" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CILCerca" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="EJECerca" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRISMACerca" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DICerca" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ORGANICO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="POLICARBONATO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="HIGHLITE" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="HIGHINDEX" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="VIDRIO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="BLANCO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ANTIRREFLEX" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="FOTOCROMATICO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CONTINTE" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SENCILLA" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="BIFOCAL" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PROGRESIVO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="FUTUREX" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="totalcliente" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ESFLejosizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CILLejosizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="EJELejosizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRISMALejosizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DILejosizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ESFCercaizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CILCercaizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="EJECercaizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRISMACercaizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DICercaizquierdo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="iddelaventa" class="java.lang.Integer"/>
+	<group name="id">
+		<groupExpression><![CDATA[$F{idoptica}]]></groupExpression>
+		<groupHeader>
+			<band height="344">
+				<textField>
+					<reportElement x="409" y="1" width="159" height="20" uuid="2fbf2c0a-0e71-4ad6-9a02-36c839b1fc2f"/>
+					<textFieldExpression><![CDATA[$F{laboratorio}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="69" height="20" uuid="a840b682-068d-4398-9525-39943f69f7f3"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[PACIENTE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="219" y="106" width="50" height="20" uuid="cfb7108f-55aa-4aa8-b05c-0b607556a07e"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[D.I.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="169" y="106" width="50" height="20" uuid="293ed01f-4779-427f-9460-edd451d943a9"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[PRISMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="119" y="106" width="50" height="20" uuid="c2878ebc-2176-4af5-8940-bbfd26aac53c"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[EJE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="69" y="106" width="50" height="20" uuid="f252ff95-a558-420a-bda8-e463ee379fa6"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[CIL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="19" y="106" width="50" height="20" uuid="f7a7456e-da6f-4f7e-b293-cfd5fe33c60e"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[ESF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="522" y="106" width="50" height="20" uuid="7fc13351-0c0a-4b07-ae92-3acea8c4bf22"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[D.I.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="372" y="107" width="50" height="20" uuid="9d9f0bf1-a220-4373-9c1a-ef7c56cec3d0"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[CIL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="422" y="107" width="50" height="20" uuid="0aca6cad-7e2a-440e-a020-a2c7ba111204"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[EJE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="88" y="66" width="100" height="20" uuid="cdcf3573-e145-4ecf-9c1f-ef2976619d97"/>
+					<textElement textAlignment="Center">
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[LEJOS]]></text>
+				</staticText>
+				<line>
+					<reportElement x="8" y="86" width="267" height="1" uuid="b9b27533-2903-4be7-b37c-6d471cc15ba3"/>
+				</line>
+				<line>
+					<reportElement x="305" y="85" width="267" height="1" uuid="8bd29088-9c84-45fa-91e1-67fe855026a5"/>
+				</line>
+				<textField>
+					<reportElement x="100" y="20" width="100" height="20" uuid="2822f181-ffae-45a0-bece-4f8ed6c81956"/>
+					<textFieldExpression><![CDATA[$F{nombrecliente}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="392" y="65" width="100" height="20" uuid="b330e328-1dfb-42e5-9376-cfa833764a87"/>
+					<textElement textAlignment="Center">
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[CERCA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="40" width="91" height="20" uuid="918be74d-0a59-42ff-8f64-a1e91306b26b"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[FECHA ENTREGA :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="261" y="0" width="160" height="20" uuid="f37c34ee-5e6d-4487-b5ba-10c8a608b0f3"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[NOMBRE DEL LABORATORIO :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="40" width="100" height="20" uuid="ba529816-7daa-4248-b666-3da195179ac9"/>
+					<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="98" y="1" width="131" height="20" uuid="1eb6dd03-0e0b-4df1-a5bb-598e5fd6e763"/>
+					<textFieldExpression><![CDATA[( $F{NOMBRECLIENTE2} == "NULL" ?  $F{NOMBRECLIENTE2}: $F{NOMBRECLIENTE2} )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="322" y="106" width="50" height="20" uuid="039e65ee-bf58-4272-9c5b-50a01eecd68c"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[ESF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="472" y="106" width="50" height="20" uuid="bd7a32ce-5b7b-4e0a-8dfb-b0abf6c5aaad"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[PRISMA]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="219" y="127" width="50" height="20" uuid="f45ed3da-2472-4f51-96ad-439e92c6e561"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{DIlejos}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="19" y="126" width="50" height="20" uuid="2261ebfe-7a61-46a4-88aa-f5bd7bd02f2d"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{ESFlejos}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="373" y="127" width="50" height="20" uuid="985514c5-25ad-47fd-84df-894411c23e4c"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{CILCerca}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="472" y="127" width="50" height="20" uuid="7fc4017d-1bda-46c4-a24f-bf61cdd4f36b"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{PRISMACerca}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="119" y="126" width="50" height="20" uuid="022e937f-e672-4b11-90b4-52e0cbc3840a"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{EJElejos}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="522" y="126" width="50" height="20" uuid="d4dabb0e-c640-465d-b852-422b96a2a78f"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{DICerca}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="69" y="127" width="50" height="20" uuid="08011f7e-fc88-4cbe-b104-7e71e0ee4818"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{CILlejos}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="324" y="127" width="48" height="20" uuid="1e15265e-64db-4e17-ae70-1b6208bb26b6"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{ESFCerca}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="169" y="126" width="50" height="20" uuid="38a2519f-8294-4a7e-8853-bfd99b162d19"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{PRISMAlejos}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="424" y="127" width="48" height="20" uuid="7e145fef-4456-48ba-a66c-c8e41e6c605d"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{EJECerca}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="202" width="100" height="20" uuid="1621e236-861c-43a2-a4d4-3a15524f31a4"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Material]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="242" width="110" height="20" uuid="bcea0d9c-2a27-47e6-b227-8ae84a2d7751"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{ORGANICO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="111" y="282" width="109" height="20" uuid="d01f921e-4444-4b5c-844c-73b329a7e810"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{ANTIRREFLEX} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="220" y="282" width="110" height="20" uuid="bb9bbb3b-eaf4-41b0-b48f-74daf6a3b2da"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{FOTOCROMATICO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="222" width="110" height="20" uuid="2aa4d301-5a46-4431-b8fa-5a516cd32a7c"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ORGANICO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="111" y="222" width="110" height="20" uuid="70df7f52-5fe6-4622-a642-0fba55ebc448"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[POLICARBONATO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="221" y="222" width="110" height="20" uuid="52e025d4-ea97-4771-aee3-3c081579732d"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HIGH LITE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="331" y="222" width="110" height="20" uuid="224b3bd0-0e1c-4c5c-a6f0-cb68a4e41f64"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HIGH INDEX]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="441" y="222" width="110" height="20" uuid="2ef73f87-303d-4046-ba62-79621b6de97f"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIDRIO]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="1" y="282" width="110" height="20" uuid="ee3ea1d1-a610-497f-b6ec-8c75844a1ec0"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{BLANCO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="110" y="242" width="111" height="20" uuid="62e2c86e-801e-4e44-adff-e88b2062c477"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{POLICARBONATO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="222" y="242" width="109" height="20" uuid="9c39e1e8-4796-47ca-863e-937fbe834e9a"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{HIGHLITE} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="331" y="242" width="110" height="20" uuid="b233068f-6de8-415a-a2e6-0dca0ef03965"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{HIGHINDEX} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="441" y="242" width="110" height="20" uuid="3c521b0f-a402-40a4-844e-960061acc539"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{VIDRIO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="262" width="110" height="20" uuid="de814ab5-dee6-4c73-9cd6-bd5e9e84ed64"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BLANCO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="110" y="262" width="110" height="20" uuid="e6cf5b25-e9ec-4a37-81db-91ca34adef57"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANTIRREFLEX]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="220" y="262" width="110" height="20" uuid="ace12dcc-0201-4973-bc86-0a78add7e1a0"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FOTOCROMATICO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="330" y="262" width="110" height="20" uuid="e183d016-e0a1-44e4-8a13-053a99ed1bcf"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CON TINTE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="330" y="282" width="109" height="20" uuid="f23ec825-0113-4049-b206-48628d983aab"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{CONTINTE} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="302" width="110" height="20" uuid="42afd7cd-7fa1-460e-8beb-32412ea8ebba"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[V. SENCILLA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="110" y="302" width="110" height="20" uuid="5d263903-dbbe-4a4b-9a38-bbce73453f69"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BIFOCAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="221" y="302" width="110" height="20" uuid="10b9d7c8-dfa1-4321-b32f-e50a14be7cfe"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRESIVO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="332" y="302" width="110" height="20" uuid="753a2b85-b1cb-4903-a926-d7e9668cb6cb"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FUTUREX]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="1" y="322" width="110" height="20" uuid="d8f1d5c3-e042-453e-8d85-e5f3a84bff6b"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{SENCILLA} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="112" y="322" width="110" height="20" uuid="87a44fe2-0db7-4b2c-8307-74f0622b31cf"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{BIFOCAL} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="222" y="322" width="110" height="20" uuid="59373991-a5cb-452c-8489-e666a192838d"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{PROGRESIVO} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="332" y="322" width="110" height="20" uuid="e41f7ba6-a37c-4294-904c-59923b8172e6"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[( $F{FUTUREX} == 1 ? "SI" : "NO" )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="20" width="68" height="20" uuid="824059c1-bed3-4b3e-ae0c-81855838e9f6"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[LENTE PARA :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="19" y="146" width="50" height="20" uuid="4adba819-cfa7-4325-8361-5f7fb65beabb"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{ESFLejosizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="69" y="146" width="50" height="20" uuid="3a59ee1a-36ce-48ee-b2bd-bd40e7667541"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{CILLejosizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="119" y="147" width="50" height="20" uuid="c0a86729-827e-4fa6-862c-94120da9b08a"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{EJELejosizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="169" y="147" width="50" height="20" uuid="a854e392-71be-4993-ab5d-0452c8825ad9"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{PRISMALejosizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="219" y="147" width="50" height="20" uuid="6ccf7f76-3013-49a9-8efb-d4d6ab3ea5d4"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{DILejosizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="323" y="147" width="50" height="20" uuid="adb19891-44fd-4e88-86ae-758efb78bf54"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{ESFCercaizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="473" y="148" width="50" height="20" uuid="0e31dfd0-b45b-43e5-bfb6-b4638c546f2a"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{PRISMACercaizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="423" y="147" width="50" height="20" uuid="0a6b6236-9ea8-48b5-ada1-8c473c3ad1fb"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{EJECercaizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="373" y="147" width="50" height="20" uuid="018fa405-9774-4350-85ec-186304030485"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{CILCercaizquierdo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="523" y="147" width="50" height="20" uuid="222497ab-4e9b-408e-a944-11c285e9cdcc"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{DICercaizquierdo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="126" width="27" height="20" uuid="669461b2-2794-442e-844f-4356b1101816"/>
+					<text><![CDATA[DER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="146" width="23" height="16" uuid="c258a25a-c3ee-40fc-82ce-29567ba29588"/>
+					<text><![CDATA[IZQ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="295" y="127" width="27" height="20" uuid="d1270b83-1e92-4550-8415-393586385f66"/>
+					<text><![CDATA[DER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="297" y="148" width="23" height="16" uuid="f1c38e10-300a-4c1f-8316-89270f6d6413"/>
+					<text><![CDATA[IZQ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="26" y="105" width="1" height="62" uuid="a353cda3-42fe-40bb-9d11-c0c8abe34090"/>
+				</line>
+				<line>
+					<reportElement x="323" y="106" width="1" height="62" uuid="8db8e1aa-7761-4f30-a8d7-5c4a78d4174d"/>
+				</line>
+				<line>
+					<reportElement x="1" y="145" width="268" height="1" uuid="48ea1ded-21b3-491f-9b55-f8afef769115"/>
+				</line>
+				<line>
+					<reportElement x="300" y="144" width="268" height="1" uuid="5c6fe05c-1187-4f88-98e2-a57aee742e50"/>
+				</line>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="10" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="450" y="0" width="106" height="45" forecolor="#CCCCCC" backcolor="#FFFFFF" uuid="75205a02-e09c-45db-a7ad-d2dba8e8c2a5"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Rene Moreno N#19
+Telef.:3-327755
+Santa Cruz - Bolivia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="25" width="163" height="20" uuid="7a9b82b7-44d5-4018-b0f6-74befce9931f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DETALLE OPTICA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="47" width="100" height="20" uuid="f1f2fb75-fb9b-4ccc-906f-e7acd539b890"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[RECIBO NUMERO # :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="473" y="43" width="95" height="20" uuid="1f09c3b8-a735-461e-9e61-9d9ccc0338bf"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{iddelaventa}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="8" y="13" width="83" height="50" uuid="3e02928d-c5da-4155-bc27-6fda7eaba69a"/>
+				<imageExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\logo.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch"/>
+	</columnHeader>
+	<columnFooter>
+		<band height="161" splitType="Stretch">
+			<staticText>
+				<reportElement x="26" y="66" width="93" height="20" uuid="e9f67a27-f049-49f4-aba9-1263fd589918"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL INTERNO :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="119" y="66" width="110" height="20" uuid="56a2f6bf-4d9a-47b0-8992-3792d32a6fb9"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{totalcliente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="27" y="107" width="92" height="20" uuid="8c9da3fb-24ea-4da8-9e95-f17bfed5008e"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL CLIENTE :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="119" y="107" width="110" height="20" uuid="116d88a4-1829-4a86-b78d-99a79a05e3c0"/>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

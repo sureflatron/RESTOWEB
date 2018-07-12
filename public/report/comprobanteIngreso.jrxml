@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb3a781e-accf-4102-af06-7009415f3d19">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idingreso" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idempleado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\xampp\\RESTOWEB\\public\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT DISTINCT ingreso.id, ingreso.fecha,ingreso.hora,ingreso.importe,ingreso.recibidoDe as cobradoA,empleado.nombre as empleado,ingreso.glosa as concepto,tipoingreso.nombre as tipoIngreso, ingreso.importe
+            FROM ingreso 
+            INNER JOIN tipoingreso
+            INNER JOIN puntoventa 
+            INNER JOIN empleado
+            WHERE ingreso.idTipoIngreso=tipoingreso.id 
+            and ingreso.idPuntoVenta=puntoventa.id
+            and puntoventa.idEmpleado = empleado.id
+            and ingreso.id=$P{idingreso}]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="importe" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cobradoA" class="java.lang.String"/>
+	<field name="empleado" class="java.lang.String"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="tipoIngreso" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="423" y="0" width="49" height="20" uuid="e318ea1c-e65b-46ea-886c-ececedce5434"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="423" y="20" width="49" height="20" uuid="f7ef9ae0-5ab3-4cb2-baea-c05e42ddaa79"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="423" y="40" width="49" height="20" uuid="d658e548-dbec-4f0e-bdd0-2c1de5ae0c4c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="472" y="0" width="100" height="20" uuid="c91105d6-fec1-472a-9b5b-8def0fa285c8"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="472" y="20" width="100" height="20" uuid="644543a0-d244-4e82-9c17-566fef30f60b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="472" y="40" width="100" height="20" uuid="97e673c7-d331-4600-a5f9-7fb0a80c3a3c"/>
+				<subreportParameter name="idempleado">
+					<subreportParameterExpression><![CDATA[$P{idempleado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpledo.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="182" y="20" width="138" height="20" uuid="9fb8b3c6-d107-4e35-80e6-baca42b44195"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TXN DE INGRESO NRO. ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="320" y="20" width="48" height="20" uuid="543b4a31-5810-493a-9111-26585f2dfcef"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="12" y="0" width="185" height="20" uuid="5aee0f45-cdac-4e50-8152-9a1db6644713"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "nombreEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="3" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="4" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement x="12" y="0" width="85" height="20" uuid="cb2cd8f7-6f61-46ef-b069-84b2dcdca865"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="20" width="85" height="20" uuid="5545fcb4-af9e-4349-a0d8-d12f1f978373"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Ingreso :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="40" width="85" height="20" uuid="71342a1c-29d6-4675-b755-c9b7a9bae039"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recibido de:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="60" width="85" height="20" uuid="2762ab33-370c-45b3-b749-a9b8bc34055b"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Por concepto de :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="80" width="85" height="20" uuid="d96c0082-6342-482d-a268-e52268080e8a"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="20" uuid="ed62c2dc-d2a1-4d04-ab3e-a7d0e36b7db9"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="0" width="86" height="20" uuid="11a0d6ce-2caf-4e67-8f35-7659a5c47f6c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Registrado por :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="97" y="0" width="100" height="20" uuid="e219db5b-557a-46fc-929e-64aa5e374009"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(new java.text.SimpleDateFormat("dd/MM/yyyy ")).format($F{fecha})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="97" y="20" width="100" height="20" uuid="7208a0b8-fe4e-44e6-a607-d12924fa7934"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipoIngreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="97" y="40" width="100" height="20" uuid="0c03d7fa-9069-4821-91a1-be8b90fc9763"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cobradoA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="97" y="60" width="100" height="20" uuid="dca28c1f-2487-4112-9a71-6c2ff9990b28"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{concepto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="97" y="80" width="100" height="20" uuid="92195967-6fd1-486e-9f6f-5bd5f6b0cace"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="472" y="0" width="100" height="20" uuid="9abc75e2-e4da-44fd-9613-ff9794266c3a"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{empleado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="13" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="9" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="8" splitType="Stretch"/>
+	</summary>
+</jasperReport>

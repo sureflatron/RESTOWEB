@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sumaConTarjeta" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="de161d0f-171b-4803-b499-3190e47a9d77">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaini" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechafin" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idusuario" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select SUM(Importe) as importe from (SELECT venta.id,
+        
+        (SELECT IF( SUM(pago.pagado) IS NULL, venta.aCuenta ,  SUM(pago.pagado) +venta.aCuenta) AS cuotasPagadas
+		FROM (SELECT SUM(cobrocuota.`importe`) AS pagado, cuentacobrar.`id`, cuentacobrar.`idVenta`
+			FROM cobrocuota, cuentacobrar
+			WHERE cobrocuota.`idCuentaCobrar` = cuentacobrar.`id`
+			GROUP BY cuentacobrar.`id`) AS pago
+		WHERE pago.idVenta = venta.`id`
+		) AS Importe
+
+        FROM venta 
+        INNER JOIN puntoventa 
+        INNER JOIN empleado
+        WHERE venta.idPuntoVenta=puntoventa.id 
+                   AND puntoventa.idEmpleado=empleado.id
+                   AND empleado.id=$P{idusuario}
+                   AND venta.eliminado=0 and venta.estado =1
+                   AND venta.formaPago = 'Credito' and venta.fecha BETWEEN $P{fechaini} AND $P{fechafin}
+        ORDER BY id DESC)img]]>
+	</queryString>
+	<field name="importe" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="141" height="20" uuid="986f6f8f-8b2e-43f4-bca4-bec95cb3b20a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{importe} == null ? 0: $F{importe} )]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>
